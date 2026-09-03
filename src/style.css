@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    @apply antialiased;
+  }
+
+  * {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input, textarea, [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-vku-600 text-white rounded-xl font-semibold text-sm shadow-sm hover:bg-vku-700 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold text-sm shadow-sm border border-gray-200 hover:bg-gray-50 active:scale-95 transition-all duration-150;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg font-medium text-sm hover:bg-red-600 active:scale-95 transition-all duration-150;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden;
+  }
+
+  .form-label {
+    @apply block text-sm font-semibold text-gray-700 mb-2;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-vku-500 focus:border-transparent transition-all duration-150 text-base;
+  }
+
+  .form-select {
+    @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-vku-500 focus:border-transparent transition-all duration-150 appearance-none text-base;
+  }
+
+  .form-textarea {
+    @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-vku-500 focus:border-transparent transition-all duration-150 resize-none text-base;
+  }
+
+  .badge-pending {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold;
+  }
+
+  .badge-synced {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold;
+  }
+
+  .badge-draft {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold;
+  }
+
+  .bottom-nav-item {
+    @apply text-gray-500 hover:text-vku-600 transition-colors;
+  }
+
+  .bottom-nav-item.active {
+    @apply text-vku-600;
+  }
+
+  .step-dot {
+    @apply w-3 h-3 rounded-full transition-all duration-200;
+  }
+
+  .step-dot.active {
+    @apply bg-vku-600 scale-125;
+  }
+
+  .step-dot.completed {
+    @apply bg-vku-400;
+  }
+
+  .step-dot.inactive {
+    @apply bg-gray-200;
+  }
+}
+
+@layer utilities {
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #bae6fd;
+  border-radius: 2px;
+}
+
+/* Animations */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-slide-in-right { animation: slideInRight 0.25s ease-out; }
+.animate-slide-in-up    { animation: slideInUp 0.25s ease-out; }
+.animate-fade-in        { animation: fadeIn 0.2s ease-out; }
+
+/* PWA splash / loading */
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+}
+
+/* Photo preview */
+.photo-preview {
+  @apply w-full h-48 object-cover rounded-xl border-2 border-vku-200;
+}
+
+/* Star rating */
+.star-btn {
+  @apply text-3xl cursor-pointer transition-transform duration-100 active:scale-90;
+  -webkit-tap-highlight-color: transparent;
+}

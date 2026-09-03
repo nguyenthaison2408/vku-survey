@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0284c7" />
+    <meta name="description" content="VKU Field Survey - Ứng dụng kiểm tra cơ sở vật chất" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="VKU Survey" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <title>VKU Field Survey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <div id="app">
+      <!-- Network status bar -->
+      <div id="network-bar" class="hidden fixed top-0 left-0 right-0 z-50 py-1.5 text-center text-sm font-medium transition-all duration-300">
+        <span id="network-msg"></span>
+      </div>
+
+      <!-- Navbar -->
+      <nav id="navbar"></nav>
+
+      <!-- Toast container -->
+      <div id="toast-container" class="fixed top-16 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+      <!-- Main content -->
+      <main id="main-content" class="pb-24 pt-14 min-h-screen"></main>
+
+      <!-- Bottom nav -->
+      <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 safe-area-pb">
+        <div class="flex items-center justify-around h-16">
+          <a href="#/" data-route="home" class="bottom-nav-item flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span class="text-xs font-medium">Trang chủ</span>
+          </a>
+          <a href="#/survey" data-route="survey" class="bottom-nav-item flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors">
+            <div class="w-12 h-12 bg-vku-600 rounded-full flex items-center justify-center -mt-6 shadow-lg shadow-vku-600/40">
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+            </div>
+            <span class="text-xs font-medium mt-1">Kiểm tra</span>
+          </a>
+          <a href="#/history" data-route="history" class="bottom-nav-item flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <span class="text-xs font-medium">Lịch sử</span>
+          </a>
+        </div>
+      </nav>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

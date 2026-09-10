@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name vku-survey --branch main",
     "cap:sync": "npx cap sync",
     "cap:android": "npx cap run android",
     "cap:build": "npm run build && npx cap sync"
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.4.19",
+    "docx": "^9.7.1",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.4.5",

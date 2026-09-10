@@ -1,21 +1,81 @@
-import { getPendingSurveys, saveSurvey, type Survey } from './db'
+import { getPendingSurveys, saveSurvey, getSetting, setSetting, type Survey } from './db'
 import { showToast } from './components/toast'
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-// Mock API endpoint — replace with real backend URL
-const API_ENDPOINT = 'https://jsonplaceholder.typicode.com/posts'
+export const DEFAULT_API_ENDPOINT = 'https://jsonplaceholder.typicode.com/posts'
+export const GOOGLE_SHEET_KEY = 'google_sheet_url'
 const MAX_RETRY_ATTEMPTS = 3
 const SYNC_TAG = 'sync-surveys'
+
+// ── Settings Helpers ───────────────────────────────────────────────────────
+
+export async function getSyncEndpoint(): Promise<string> {
+  const customUrl = await getSetting<string>(GOOGLE_SHEET_KEY, '')
+  if (customUrl && customUrl.trim()) {
+    return customUrl.trim()
+  }
+  return DEFAULT_API_ENDPOINT
+}
+
+export async function setGoogleSheetUrl(url: string): Promise<void> {
+  await setSetting(GOOGLE_SHEET_KEY, url.trim())
+}
+
+export async function isGoogleSheetConfigured(): Promise<boolean> {
+  const url = await getSetting<string>(GOOGLE_SHEET_KEY, '')
+  return !!url && url.includes('script.google.com')
+}
 
 // ── Sync State ─────────────────────────────────────────────────────────────
 
 let isSyncing = false
 
+// ── Test Connection Helper ─────────────────────────────────────────────────
+
+export async function testGoogleSheetConnection(url: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const trimmed = url.trim()
+    if (!trimmed || !trimmed.startsWith('https://script.google.com/')) {
+      return { success: false, message: 'URL không hợp lệ. URL phải bắt đầu bằng https://script.google.com/' }
+    }
+
+    const testPayload = {
+      id: 'TEST-' + Math.random().toString(36).substring(2, 7).toUpperCase(),
+      building: 'Khu Kiểm Tra Thử',
+      floor: 'Tầng 1',
+      room: 'Test Room',
+      category: 'Hardware',
+      rating: 5,
+      notes: 'Thử nghiệm kết nối từ VKU Field Survey lúc ' + new Date().toLocaleTimeString('vi-VN'),
+      hasPhoto: false,
+      photoBase64: null,
+      createdAt: new Date().toISOString()
+    }
+
+    // Google Apps Script redirect handling with no-cors
+    await fetch(trimmed, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(testPayload),
+      signal: AbortSignal.timeout(15_000)
+    })
+
+    return { success: true, message: '✅ Đã gửi dòng dữ liệu mẫu thành công! Bạn hãy mở Google Sheet để kiểm tra dòng mới.' }
+  } catch (err) {
+    console.error('Test sync error:', err)
+    return { success: false, message: '❌ Lỗi khi gửi dữ liệu: ' + (err instanceof Error ? err.message : String(err)) }
+  }
+}
+
 // ── Dispatch Single Survey ─────────────────────────────────────────────────
 
 async function dispatchSurvey(survey: Survey): Promise<boolean> {
   try {
+    const endpoint = await getSyncEndpoint()
+    const isGoogleScript = endpoint.includes('script.google.com')
+
     const payload = {
       id: survey.id,
       building: survey.building,
@@ -25,19 +85,33 @@ async function dispatchSurvey(survey: Survey): Promise<boolean> {
       rating: survey.rating,
       notes: survey.notes,
       hasPhoto: !!survey.photoBase64,
+      photoBase64: survey.photoBase64,
       createdAt: survey.createdAt,
-      // Note: In production, upload photo separately (multipart) to save bandwidth
+      submittedAt: new Date().toISOString()
     }
 
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(10_000)
-    })
+    if (isGoogleScript) {
+      // Google Apps Script CORS & Redirect Handling:
+      // Sending with 'text/plain' skips CORS preflight OPTIONS request.
+      // Mode 'no-cors' allows browser to follow Google's 302 redirect cleanly.
+      await fetch(endpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15_000)
+      })
+    } else {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(10_000)
+      })
 
-    if (!response.ok) {
-      throw new Error(`Server responded ${response.status}`)
+      if (!response.ok) {
+        throw new Error(`Server responded ${response.status}`)
+      }
     }
 
     // Mark as synced
@@ -48,7 +122,7 @@ async function dispatchSurvey(survey: Survey): Promise<boolean> {
       syncAttempts: survey.syncAttempts + 1
     })
 
-    console.log(`[sync] Survey ${survey.id} synced successfully`)
+    console.log(`[sync] Survey ${survey.id} synced successfully to ${isGoogleScript ? 'Google Sheets' : 'Server'}`)
     return true
   } catch (err) {
     console.error(`[sync] Failed to sync survey ${survey.id}:`, err)

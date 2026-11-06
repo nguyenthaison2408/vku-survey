@@ -70,7 +70,12 @@ self.addEventListener('sync', ((event: SyncEvent) => {
   }
 }) as EventListener)
 
-// ── Skip Waiting ───────────────────────────────────────────────────────────
+// ── Install & Skip Waiting Immediately ─────────────────────────────────────
+self.addEventListener('install', () => {
+  console.log('[SW] Installing new version and skipping waiting...')
+  self.skipWaiting()
+})
+
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting()
@@ -79,5 +84,11 @@ self.addEventListener('message', (event) => {
 
 // ── Activate: Claim Clients ────────────────────────────────────────────────
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim())
+  console.log('[SW] Activated! Claiming clients...')
+  event.waitUntil(
+    Promise.all([
+      cleanupOutdatedCaches(),
+      self.clients.claim()
+    ])
+  )
 })

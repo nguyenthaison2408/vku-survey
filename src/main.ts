@@ -10,16 +10,36 @@ import { showToast } from './components/toast'
 // ── PWA Service Worker Registration ───────────────────────────────────────
 
 if ('serviceWorker' in navigator) {
-  // vite-plugin-pwa registers the SW automatically via the plugin
   navigator.serviceWorker.register('/sw.js').then(
     (registration: ServiceWorkerRegistration) => {
       console.log('[app] Service Worker registered:', registration)
-      showToast('✅ Ứng dụng đã sẵn sàng hoạt động offline!', 'success', 3000)
+
+      // Listen for updates
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[app] New SW installed, auto-reloading...')
+              showToast('🔄 Đang tải phiên bản mới nhất...', 'info', 1500)
+              setTimeout(() => window.location.reload(), 800)
+            }
+          })
+        }
+      })
     },
     (error: Error) => {
       console.error('[app] Service Worker registration failed:', error)
     }
   )
+
+  let refreshing = false
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true
+      window.location.reload()
+    }
+  })
 }
 
 // ── Routes ─────────────────────────────────────────────────────────────────

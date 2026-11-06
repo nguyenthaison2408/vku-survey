@@ -9,8 +9,10 @@
     "preview": "vite preview",
     "deploy": "npm run build && npx wrangler pages deploy dist --project-name vku-survey --branch main",
     "cap:sync": "npx cap sync",
+    "cap:open": "npx cap open android",
     "cap:android": "npx cap run android",
-    "cap:build": "npm run build && npx cap sync"
+    "cap:build": "npm run build && npx cap sync",
+    "build:apk": "npm run cap:build && cd android && gradlew.bat assembleDebug"
   },
   "dependencies": {
     "@capacitor/android": "^6.0.0",
@@ -21,6 +23,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.2.2",
     "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.4.19",
     "docx": "^9.7.1",
